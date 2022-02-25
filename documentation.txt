@@ -1,0 +1,13 @@
+cd ElectroSwap-Backend
+
+# Initial setup
+sudo apt install python3-pip python3-venv -y
+python3 -m pip install Django
+python3 -m venv env
+source env/bin/activate
+pip3 install -r requirements.txt
+
+# To run
+python3 manage.py migrate
+python3 manage.py runserver
+Open http://localhost:8000/ in browser
