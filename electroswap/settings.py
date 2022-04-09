@@ -14,7 +14,7 @@ TEMPLATE_DIR = BASE_DIR / "templates"
 STATIC_URL = "static/"
 
 
-if config.ENV == "development":
+if config.ENV == "development" or config.ENV == "local":
     STATIC_DIR = BASE_DIR / "static"
     STATICFILES_DIRS = [STATIC_DIR]
     DEBUG = True

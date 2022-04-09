@@ -15,13 +15,13 @@ local = {
 
 development = {
     "ENV": "development",
-    "APP_URL": "http://localhost:3000/",
+    "APP_URL": "http://localhost:3000",
     "API_URL": "http://localhost:8000/",
 }
 
 production = {
     "ENV": "production",
-    "APP_URL": "https://electroswap.vercel.app/",
+    "APP_URL": "https://electroswap.vercel.app",
     "API_URL": "https://electroswapapi.herokuapp.com/",
 }
 
