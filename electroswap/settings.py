@@ -1,4 +1,5 @@
 """Django settings for electroswap project."""
+from electroswap import config
 import os
 from pathlib import Path
 from datetime import timedelta
@@ -11,14 +12,30 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / "templates"
 STATIC_URL = "static/"
 
+
+if config.ENV == "development":
+    STATIC_DIR = BASE_DIR / "static"
+    STATICFILES_DIRS = [STATIC_DIR]
+    DEBUG = True
+
+if config.ENV == "production":
+    STATIC_ROOT = BASE_DIR / "static"
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+    DEBUG = False
+
+
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+AUTH_USER_MODEL = "user.User"
 DEBUG = True
 ALLOWED_HOSTS = []
+CORS_ORIGIN_ALLOW_ALL = False
+ALLOWED_HOSTS = ["localhost", ".herokuapp.com"]
+CORS_ORIGIN_WHITELIST = (config.APP_URL,)
 
 WSGI_APPLICATION = "electroswap.wsgi.application"
 ROOT_URLCONF = "electroswap.urls"
@@ -32,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -42,6 +60,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 
