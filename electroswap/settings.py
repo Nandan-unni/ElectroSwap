@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()  # For loading ENV variables from .env file
 
@@ -87,7 +88,7 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
+DATABASES["default"].update(dj_database_url.config(conn_max_age=500))
 
 AUTH_PASSWORD_VALIDATORS = [
     {
