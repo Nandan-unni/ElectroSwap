@@ -51,6 +51,9 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "user",
+    "consumer",
+    "producer",
+    "battery",
 ]
 
 MIDDLEWARE = [

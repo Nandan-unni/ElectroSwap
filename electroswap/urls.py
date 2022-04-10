@@ -12,5 +12,8 @@ def landing(request):
 urlpatterns = [
     path("", landing, name="hwd"),
     path("admin/", admin.site.urls),
-    path("auth/", include("auth.urls")),
+    path("user/", include("user.urls")),
+    path("consumer/", include("consumer.urls")),
+    path("producer/", include("producer.urls")),
+    path("power/", include("battery.urls")),
 ]
