@@ -11,7 +11,7 @@ load_dotenv()  # For loading ENV variables from .env file
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / "templates"
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 
 
 if config.ENV == "development" or config.ENV == "local":
@@ -32,8 +32,7 @@ USE_TZ = True
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 AUTH_USER_MODEL = "user.User"
-DEBUG = True
-ALLOWED_HOSTS = []
+
 CORS_ORIGIN_ALLOW_ALL = False
 ALLOWED_HOSTS = ["localhost", ".herokuapp.com"]
 CORS_ORIGIN_WHITELIST = (config.APP_URL,)
@@ -56,6 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
