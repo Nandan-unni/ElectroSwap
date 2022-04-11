@@ -24,10 +24,39 @@ def get_distance_btw(currLoc, station) -> str:
 
     # radius of earth = 6371 km or 3956 miles
     d_num = c * 6371 * 1000
+    t_num = d_num / 45000
+
     if d_num > 1000:
         d_str = round(d_num / 1000, 2)
         d_str = str(d_str) + " km" + ("s" if d_str > 1 else "")
     else:
         d_str = round(d_num, 1)
         d_str = str(d_str) + "  m" + ("s" if d_str > 1 else "")
-    return d_num, d_str
+
+    if t_num < 1 / 60:
+        t_str = round((t_num * 60 * 60), 2)
+        t_str = str(t_str) + " sec"
+    elif t_num < 1:
+        t_str = round((t_num * 60), 2)
+        t_str = str(t_str) + " min"
+    else:
+        t_str = round(t_num, 1)
+        t_str = str(t_str) + " hr"
+    return d_num, d_str, t_num, t_str
+
+
+def get_station_data(station, userLat, userLong):
+    d_num, d_str, t_num, t_str = get_distance_btw(
+        {"latitude": userLat, "longitude": userLong},
+        {"latitude": station.latitude, "longitude": station.longitude},
+    )
+    return {
+        "pk": station.pk,
+        "name": station.name,
+        "latitude": station.latitude,
+        "longitude": station.longitude,
+        "distance": d_num,
+        "time": t_num,
+        "distance_msg": d_str,
+        "time_msg": t_str,
+    }

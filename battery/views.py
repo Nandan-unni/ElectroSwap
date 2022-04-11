@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from rest_framework import generics, views, status
 from rest_framework.response import Response
 
-from battery.utils import get_distance_btw
+from battery.utils import get_distance_btw, get_station_data
 from battery.models import Battery, Station, Vehicle
 from battery.serializers import BatterySerializer, StationSerializer, VehicleSerializer
 
@@ -39,30 +39,45 @@ class ManageStations(generics.ListCreateAPIView):
     #     return query_set
 
 
-class FindStations(generics.ListAPIView):
+class FindStations(views.APIView):
     def get(self, request, *args, **kwargs):
         stations = Station.objects.all()
         stations_data = []
         for station in stations:
             stations_data.append(
-                {
-                    "pk": station.pk,
-                    "name": station.name,
-                    "latitude": station.latitude,
-                    "longitude": station.longitude,
-                    "distance": get_distance_btw(
-                        {"latitude": 90, "longitude": 60},
-                        {
-                            "latitude": station.latitude,
-                            "longitude": station.longitude,
-                        },
-                    ),
-                }
+                get_station_data(
+                    station,
+                    float(request.query_params.get("latitude")),
+                    float(request.query_params.get("longitude")),
+                )
             )
         stations_data.sort(key=lambda station: station["distance"])
         return HttpResponse(
-            json.dumps({"stations": stations_data}), content_type="application/json"
+            json.dumps({"success": True, "stations": stations_data}),
+            content_type="application/json",
         )
+
+
+class GetStation(views.APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            station = Station.objects.get(pk=kwargs["pk"])
+            return HttpResponse(
+                json.dumps(
+                    {
+                        "success": True,
+                        "station": get_station_data(
+                            station,
+                            float(request.query_params.get("latitude")),
+                            float(request.query_params.get("longitude")),
+                        ),
+                    }
+                )
+            )
+        except Station.DoesNotExist:
+            return HttpResponse(
+                json.dumps({"success": False}), content_type="application/json"
+            )
 
 
 class ManageStation(generics.RetrieveUpdateDestroyAPIView):

@@ -2,6 +2,7 @@ from django.urls import path
 
 from battery.views import (
     FindStations,
+    GetStation,
     ManageBatteries,
     ManageBattery,
     ManageStations,
@@ -18,5 +19,6 @@ urlpatterns = [
     path("vehicles/", ManageVehicles.as_view(), name="manage_vehicles"),
     path("battery/<int:pk>/", ManageBattery.as_view(), name="manage_battery"),
     path("station/<int:pk>/", ManageStation.as_view(), name="manage_station"),
+    path("station/get/<int:pk>/", GetStation.as_view(), name="get_station"),
     path("vehicle/<int:pk>/", ManageVehicle.as_view(), name="manage_vehicle"),
 ]
