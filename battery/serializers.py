@@ -8,6 +8,19 @@ class StationSerializer(serializers.ModelSerializer):
         fields = ["pk", "name", "latitude", "longitude"]
 
 
+class FindStationSerializer(serializers.ModelSerializer):
+    distance = serializers.SerializerMethodField()
+    # distance = serializers.FloatField()
+    # time = serializers.IntegerField()
+
+    def get_distance(self, obj):
+        return "89"
+
+    class Meta:
+        model = Station
+        fields = ["pk", "name", "distance"]
+
+
 class NewBatteriesSerializer(serializers.Serializer):
     class Meta:
         model = Station
