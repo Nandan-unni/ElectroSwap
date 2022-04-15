@@ -1,10 +1,10 @@
-import json
-from django.db.models import FloatField, IntegerField, Value
-from django.http import HttpResponse
+from electroswap import config
+import razorpay
 from rest_framework import generics, views, status
 from rest_framework.response import Response
 
-from battery.utils import get_distance_btw, get_station_data
+from battery.utils import get_station_data
+from consumer.models import Consumer
 from battery.models import Battery, Station, Vehicle
 from battery.serializers import BatterySerializer, StationSerializer, VehicleSerializer
 
@@ -20,6 +20,11 @@ class ManageBattery(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ManageVehicles(generics.ListCreateAPIView):
+    serializer_class = VehicleSerializer
+    queryset = Vehicle.objects.all()
+
+
+class ListVehicles(generics.ListAPIView):
     serializer_class = VehicleSerializer
     queryset = Vehicle.objects.all()
 
@@ -42,19 +47,33 @@ class ManageStations(generics.ListCreateAPIView):
 class FindStations(views.APIView):
     def get(self, request, *args, **kwargs):
         stations = Station.objects.all()
-        stations_data = []
-        for station in stations:
-            stations_data.append(
-                get_station_data(
-                    station,
-                    float(request.query_params.get("latitude")),
-                    float(request.query_params.get("longitude")),
+        if request.user.user_type == "consumer":
+            consumer = Consumer.objects.get(user=request.user)
+            try:
+                stations_data = []
+                batteries = Battery.objects.filter(vehicle=consumer.vehicle)
+                for station in stations:
+                    if any(battery in batteries for battery in station.batteries.all()):
+                        stations_data.append(
+                            get_station_data(
+                                station,
+                                float(request.query_params.get("latitude")),
+                                float(request.query_params.get("longitude")),
+                            )
+                        )
+                stations_data.sort(key=lambda station: station["distance"])
+                return Response(
+                    data={"success": True, "stations": stations_data},
+                    status=status.HTTP_200_OK,
                 )
-            )
-        stations_data.sort(key=lambda station: station["distance"])
-        return HttpResponse(
-            json.dumps({"success": True, "stations": stations_data}),
-            content_type="application/json",
+            except Battery.DoesNotExist:
+                return Response(
+                    data={"success": False, "stations": []},
+                    status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+                )
+        return Response(
+            data={"success": False, "stations": []},
+            status=status.HTTP_401_UNAUTHORIZED,
         )
 
 
@@ -62,22 +81,38 @@ class GetStation(views.APIView):
     def get(self, request, *args, **kwargs):
         try:
             station = Station.objects.get(pk=kwargs["pk"])
-            return HttpResponse(
-                json.dumps(
-                    {
-                        "success": True,
-                        "station": get_station_data(
-                            station,
-                            float(request.query_params.get("latitude")),
-                            float(request.query_params.get("longitude")),
-                        ),
-                    }
-                )
+            return Response(
+                data={
+                    "success": True,
+                    "station": get_station_data(
+                        station,
+                        float(request.query_params.get("latitude")),
+                        float(request.query_params.get("longitude")),
+                    ),
+                },
+                status=status.HTTP_200_OK,
             )
         except Station.DoesNotExist:
-            return HttpResponse(
-                json.dumps({"success": False}), content_type="application/json"
+            return Response(
+                data={"success": False},
+                status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
             )
+
+
+class Payments(views.APIView):
+    def get(self, request, *args, **kwargs):
+        return Response(data={})
+
+    def post(self, request, *args, **kwargs):
+        client = razorpay.Client(auth=(config.RAZORPAY_ID, config.RAZORPAY_SECRET))
+        DATA = {
+            "amount": int(request.data.get("amount")),
+            "currency": "INR",
+            "receipt": "receipt#1",
+            "notes": {"vehicle": "Vehicle", "station": "Station"},
+        }
+        client.order.create(data=DATA)
+        return Response(data={})
 
 
 class ManageStation(generics.RetrieveUpdateDestroyAPIView):

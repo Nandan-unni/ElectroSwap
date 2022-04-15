@@ -22,7 +22,9 @@ class Battery(models.Model):
         verbose_name_plural = "Batteries"
 
     def __str__(self):
-        return f"{self.company.name}'s Battery for {self.vehicle.name}"
+        return (
+            f"{self.company.name}'s Battery for {self.vehicle.name} (Rs {self.price})"
+        )
 
 
 class Station(models.Model):

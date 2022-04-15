@@ -5,7 +5,7 @@ from battery.models import Battery, Station, Vehicle
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
-        fields = ["pk", "name", "latitude", "longitude"]
+        fields = ["pk", "name", "latitude", "longitude", "batteries"]
 
 
 class FindStationSerializer(serializers.ModelSerializer):

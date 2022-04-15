@@ -12,6 +12,7 @@ class UserManager(BaseUserManager):
             name=name.title(),
             email=self.normalize_email(email),
             username=self.normalize_email(email),
+            user_type="producer",
         )
         user.set_password(password)
         user.save(using=self._db)

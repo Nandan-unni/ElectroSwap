@@ -50,11 +50,22 @@ def get_station_data(station, userLat, userLong):
         {"latitude": userLat, "longitude": userLong},
         {"latitude": station.latitude, "longitude": station.longitude},
     )
+    batteries = []
+    for battery in station.batteries.all():
+        batteries.append(
+            {
+                "pk": battery.pk,
+                "vehicle": {"name": battery.vehicle.name, "pk": battery.vehicle.pk},
+                "company": {"name": battery.company.name, "pk": battery.company.pk},
+                "price": battery.price,
+            }
+        )
     return {
         "pk": station.pk,
         "name": station.name,
         "latitude": station.latitude,
         "longitude": station.longitude,
+        "batteries": batteries,
         "distance": d_num,
         "time": t_num,
         "distance_msg": d_str,
