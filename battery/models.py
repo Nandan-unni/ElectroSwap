@@ -34,6 +34,12 @@ class Station(models.Model):
     batteries = models.ManyToManyField(
         "battery.Battery", related_name="Batteries", blank=True, symmetrical=False
     )
+    booked_batteries = models.ManyToManyField(
+        "battery.Battery",
+        related_name="Booked_Batteries",
+        blank=True,
+        symmetrical=False,
+    )
 
     class Meta:
         verbose_name = "Station"

@@ -35,6 +35,9 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True)
     is_email_verified = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    orders = models.ManyToManyField(
+        "Order", related_name="Orders", blank=True, symmetrical=False
+    )
 
     objects = UserManager()
 
@@ -47,3 +50,19 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class Order(models.Model):
+    battery = models.ForeignKey("battery.Battery", on_delete=models.CASCADE)
+    station = models.ForeignKey("battery.Station", on_delete=models.CASCADE)
+    is_paid = models.BooleanField("Is paid by user", default=False)
+    is_collected = models.BooleanField("Is collected by user", default=False)
+    booked_time = models.DateTimeField("Order booked at", auto_now_add=True)
+    expiry_time = models.DateTimeField("Order expires on")
+
+    class Meta:
+        verbose_name = "Order"
+        verbose_name_plural = "Orders"
+
+    def __str__(self):
+        return f"{self.battery} from {self.station.name}"
