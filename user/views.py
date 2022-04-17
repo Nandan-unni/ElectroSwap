@@ -14,6 +14,11 @@ from user.serializers import SignupSerializer, UserSerializer
 from user.utils import generate_token_pairs, get_order_data
 
 
+class ManageUsers(generics.ListCreateAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
 class ManageUser(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
