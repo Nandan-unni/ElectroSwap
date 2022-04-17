@@ -1,8 +1,8 @@
 import datetime
-from rest_framework import views, status
+from rest_framework import views, status, generics
 from rest_framework.response import Response
 
-from django.contrib.auth import get_user_model, authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from user.models import Order, User
 from consumer.models import Consumer
 from producer.models import Company, Producer
@@ -10,8 +10,13 @@ from battery.models import Battery, Station, Vehicle
 
 # from rest_framework.permissions import IsAuthenticated
 
-from user.serializers import SignupSerializer
+from user.serializers import SignupSerializer, UserSerializer
 from user.utils import generate_token_pairs, get_order_data
+
+
+class ManageUser(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
 
 class SignInView(views.APIView):

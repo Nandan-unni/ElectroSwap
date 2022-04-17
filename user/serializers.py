@@ -6,6 +6,12 @@ from producer.models import Producer
 from consumer.models import Consumer
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ["name", "email", "user_type"]
+
+
 class SignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     vehicle = serializers.IntegerField()
