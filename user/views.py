@@ -8,7 +8,6 @@ from consumer.models import Consumer
 from producer.models import Company, Producer
 from battery.models import Battery, Station, Vehicle
 
-# from rest_framework.permissions import IsAuthenticated
 
 from user.serializers import SignupSerializer, UserSerializer
 from user.utils import generate_token_pairs, get_order_data
@@ -85,7 +84,6 @@ class SignUpView(views.APIView):
 
     def post(self, request, *args, **kwargs):
         # try:
-        print(request.data)
         serializer = SignupSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -164,7 +162,9 @@ class Orders(views.APIView):
             user.orders.add(order)
             user.save()
 
-            return Response(data={"success": True}, status=status.HTTP_200_OK)
+            return Response(
+                data={"success": True, "order_pk": order.pk}, status=status.HTTP_200_OK
+            )
         except Exception as e:
             print(e)
             return Response(

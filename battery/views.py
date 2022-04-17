@@ -3,6 +3,8 @@ import razorpay
 from rest_framework import generics, views, status
 from rest_framework.response import Response
 
+# from rest_framework.permissions import IsAuthenticated
+
 from battery.utils import get_station_data
 from consumer.models import Consumer
 from battery.models import Battery, Station, Vehicle
@@ -45,6 +47,8 @@ class ManageStations(generics.ListCreateAPIView):
 
 
 class FindStations(views.APIView):
+    # permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         stations = Station.objects.all()
         if request.user.user_type == "consumer":
