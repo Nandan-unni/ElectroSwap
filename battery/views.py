@@ -54,6 +54,12 @@ class FindStations(views.APIView):
         if request.user.user_type == "consumer":
             consumer = Consumer.objects.get(user=request.user)
             try:
+                latitude = request.query_params.get("latitude", 9.9312)
+                longitude = request.query_params.get("longitude", 76.2673)
+                if latitude == "undefined":
+                    latitude = 9.9312
+                if longitude == "undefined":
+                    longitude = 76.2673
                 stations_data = []
                 batteries = Battery.objects.filter(vehicle=consumer.vehicle)
                 for station in stations:
