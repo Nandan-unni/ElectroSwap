@@ -48,7 +48,6 @@ class ManageStations(generics.ListCreateAPIView):
 
 class FindStations(views.APIView):
     # permission_classes = [IsAuthenticated]
-
     def get(self, request, *args, **kwargs):
         stations = Station.objects.all()
         if request.user.user_type == "consumer":
@@ -65,11 +64,7 @@ class FindStations(views.APIView):
                 for station in stations:
                     if any(battery in batteries for battery in station.batteries.all()):
                         stations_data.append(
-                            get_station_data(
-                                station,
-                                float(request.query_params.get("latitude")),
-                                float(request.query_params.get("longitude")),
-                            )
+                            get_station_data(station, float(latitude), float(longitude))
                         )
                 stations_data.sort(key=lambda station: station["distance"])
                 return Response(
