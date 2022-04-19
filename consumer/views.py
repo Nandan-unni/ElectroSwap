@@ -37,4 +37,7 @@ class ManageConsumer(APIView):
 
     def delete(self, request, *args, **kwargs):
         consumer = Consumer.objects.get(user=request.user)
+        user = User.objects.get(pk=request.user.pk)
+        consumer.delete()
+        user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

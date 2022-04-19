@@ -1,4 +1,5 @@
 from math import radians, asin, sqrt, sin, cos
+from turtle import back
 
 
 def closest(stations, currLoc):
@@ -71,3 +72,7 @@ def get_station_data(station, userLat, userLong):
         "distance_msg": d_str,
         "time_msg": t_str,
     }
+
+
+def get_battery_data(battery):
+    return {"name": str(battery), "pk": battery.pk, "company": battery.company.pk}

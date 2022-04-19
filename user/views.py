@@ -55,6 +55,7 @@ class SignInView(views.APIView):
                     "message": f"Welcome back, {user.name}",
                     "tokens": generate_token_pairs(user),
                     "user": {
+                        "pk": user.pk,
                         "user_type": user.user_type,
                         "meta_data": meta_data,
                     },
@@ -71,9 +72,8 @@ class SignInView(views.APIView):
             data={
                 "success": False,
                 "message": "Invalid Credentials",
-                "tokens": generate_token_pairs(user),
             },
-            status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+            status=status.HTTP_401_UNAUTHORIZED,
         )
 
 
@@ -90,7 +90,6 @@ class SignUpView(views.APIView):
             meta_data = {}
             if user.user_type == "consumer":
                 consumer = Consumer.objects.get(user=user)
-                # vehicle = Vehicle.objects.get(pk=consumer.vehicle)
                 meta_data = {
                     "vehicle": {
                         "name": consumer.vehicle.name,
@@ -99,14 +98,19 @@ class SignUpView(views.APIView):
                 }
             else:
                 producer = Producer.objects.get(user=user)
-                company = Company.objects.get(pk=producer.company)
-                meta_data = {"company": {"name": company.name, "pk": company.pk}}
+                meta_data = {
+                    "company": {
+                        "name": producer.company.name,
+                        "pk": producer.company.pk,
+                    }
+                }
             return Response(
                 data={
                     "success": True,
                     "message": f"Welcome back, {user.name}",
                     "tokens": generate_token_pairs(user),
                     "user": {
+                        "pk": user.pk,
                         "user_type": user.user_type,
                         "meta_data": meta_data,
                     },
@@ -118,6 +122,7 @@ class SignUpView(views.APIView):
             for val in err:
                 if msg == "":
                     msg = val
+        print(serializer.errors)
         return Response(
             data={
                 "success": False,

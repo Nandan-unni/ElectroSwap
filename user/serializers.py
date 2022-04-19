@@ -2,19 +2,20 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from battery.models import Vehicle
-from producer.models import Producer
+from producer.models import Company, Producer
 from consumer.models import Consumer
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ["name", "email", "user_type"]
+        fields = ["name", "email", "user_type", "pk"]
 
 
 class SignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     vehicle = serializers.IntegerField()
+    company = serializers.IntegerField()
 
     def create(self, validated_data, *args):
         print(args)
@@ -29,14 +30,21 @@ class SignupSerializer(serializers.ModelSerializer):
         user.set_password(user.password)
         user.save()
         if validated_data["user_type"] == "consumer":
-            consumer = Consumer.objects.create(user=user)
-            consumer.vehicle = Vehicle.objects.get(pk=validated_data["vehicle"])
-            consumer.save()
+            try:
+                consumer = Consumer.objects.create(user=user)
+                consumer.vehicle = Vehicle.objects.get(pk=validated_data["vehicle"])
+                consumer.save()
+            except Exception as e:
+                print(e)
         elif validated_data["user_type"] == "producer":
-            producer = Producer.objects.create(user=user)
-            producer.save()
+            try:
+                producer = Producer.objects.create(user=user)
+                producer.company = Company.objects.get(pk=validated_data["company"])
+                producer.save()
+            except Exception as e:
+                print(e)
         return user
 
     class Meta:
         model = get_user_model()
-        fields = ["name", "email", "vehicle", "password", "user_type"]
+        fields = ["name", "email", "vehicle", "company", "password", "user_type"]
